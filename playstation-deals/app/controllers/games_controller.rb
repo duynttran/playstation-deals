@@ -4,12 +4,17 @@ class GamesController < ApplicationController
   # Created 8/4/2020 by Duytan Tran
   # Displays a list of prices for the designated Playstation 4 game from various vendors
   def index
-    game = 'witcher 3'
-    @gamestop = scrape_gamestop game
-    @walmart = scrape_walmart game
-    #@bestbuy = scrape_bestbuy game
-    @playstation = scrape_playstation game
-    @amazon = scrape_amazon game
+    @game = 'Horizon Zero Dawn'
+    @scrapes = [scrape_gamestop(@game), scrape_walmart(@game), scrape_playstation(@game), scrape_amazon(@game)]
+  end
+
+  # Created 8/5/2020 by Duytan Tran
+  # Scrapes prices for the submission of a game name
+  def create
+    params.permit!
+    @game = params[:game]
+    @scrapes = [scrape_gamestop(@game), scrape_walmart(@game), scrape_playstation(@game), scrape_amazon(@game)]
+    render 'index'
   end
 
   private
@@ -25,9 +30,9 @@ class GamesController < ApplicationController
     unparsed_game_search = a.submit(search_bar, search_bar.buttons.first)
     parsed_game_search = Nokogiri::HTML(unparsed_game_search.body)
     text = 'not found'
-    search_result = parsed_game_search.search('div.product')[0]
+    search_result = parsed_game_search.search('div.price')[1]
     text = search_result.text unless search_result.nil?
-    [text, unparsed_game_search.uri.to_s]
+    [text, unparsed_game_search.uri.to_s, 'Gamestop']
   end
 
   # Created 8/4/2020 by Duytan Tran
@@ -41,9 +46,9 @@ class GamesController < ApplicationController
     unparsed_game_search = a.submit(search_bar, search_bar.buttons.first)
     parsed_game_search = Nokogiri::HTML(unparsed_game_search.body)
     text = 'not found'
-    search_result = parsed_game_search.search('div.tile-aside.Grid-col.u-size-2-8.u-offset-1-8')[0]
+    search_result = parsed_game_search.search('.price-group')[0]
     text = search_result.text unless search_result.nil?
-    [text, unparsed_game_search.uri.to_s]
+    [text, unparsed_game_search.uri.to_s, 'Walmart']
   end
 
   # Created 8/4/2020 by Duytan Tran
@@ -56,7 +61,7 @@ class GamesController < ApplicationController
     text = 'not found'
     search_result = parsed_game_search.search('div.priceView-hero-price.priceView-customer-price')[0]
     text = search_result.text unless search_result.nil?
-    [text, unparsed_game_search.uri.to_s]
+    [text, unparsed_game_search.uri.to_s, 'Bestbuy']
   end
 
   # Created 8/4/2020 by Duytan Tran
@@ -67,9 +72,9 @@ class GamesController < ApplicationController
     unparsed_game_search = a.get url
     parsed_game_search = Nokogiri::HTML(unparsed_game_search.body)
     text = 'not found'
-    search_result = parsed_game_search.search('div.grid-cell.grid-cell--game')[0]
+    search_result = parsed_game_search.search('div.grid-cell.grid-cell--game h3')[0]
     text = search_result.text unless search_result.nil?
-    [text, unparsed_game_search.uri.to_s]
+    [text, unparsed_game_search.uri.to_s, 'Playstation Store']
   end
 
   # Created 8/4/2020 by Duytan Tran
@@ -82,6 +87,6 @@ class GamesController < ApplicationController
     text = 'not found'
     search_result = parsed_game_search.search('.a-section.a-spacing-none.a-spacing-top-mini span.a-color-base')[0]
     text = search_result.text unless search_result.nil?
-    [text, unparsed_game_search.uri.to_s]
+    [text, unparsed_game_search.uri.to_s, 'Amazon']
   end
 end
