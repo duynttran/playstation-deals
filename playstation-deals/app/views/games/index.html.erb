@@ -3,9 +3,23 @@ Created 8/4/2020 by Duytan Tran
 HTML for displaying PS4 scraping results
 -->
 <h1>Pricing for: <%= @game %></h1>
+<div class="listings">
+<table>
+  <th>Vendor</th>
+  <th>Price</th>
+  <th>Product</th>
 <% @scrapes.each do |vendor| %>
-  <p><%= vendor[2]%>: <%= vendor[0] %> <a href=<%= vendor[1] %>>link</a></p>
+    <tr>
+      <td><%= vendor[2]%></td>
+      <td><%= vendor[0]%></td>
+      <td><a href=<%= vendor[1] %>>link</a></td>
+    </tr>
 <% end %>
+</table>
+</div>
+<div class="game_form">
 <%= form_with local: true do |f| %>
   <p>Scrape Prices (Game Name):<%= f.text_field :game %><%= f.submit 'SCRAPE'%></p>
 <% end %>
+</div>
+<p class="disclaimer"><span>Disclaimer: Prices may be incorrect depending on the vendor's search algorithm</span></p>
