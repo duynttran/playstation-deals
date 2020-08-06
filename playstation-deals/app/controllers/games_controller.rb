@@ -14,7 +14,7 @@ class GamesController < ApplicationController
     params.permit!
     @game = params[:game]
     @scrapes = [scrape_gamestop(@game), scrape_walmart(@game), scrape_playstation(@game), scrape_amazon(@game)]
-    render 'index'
+    render :index
   end
 
   private
